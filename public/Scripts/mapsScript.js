@@ -1,4 +1,3 @@
-var map;
 
 function initialize_gmaps() {
     // initialize new google maps LatLng object
@@ -13,25 +12,52 @@ function initialize_gmaps() {
     // get the maps div's HTML obj
     var map_canvas_obj = document.getElementById("map-canvas");
     // initialize a new Google Map with the options
-    map = new google.maps.Map(map_canvas_obj, mapOptions);
+    var map = new google.maps.Map(map_canvas_obj, mapOptions);
     // Add the marker to the map
     var marker = new google.maps.Marker({
         position: myLatlng,
         title:"Hello World!"
     });
-}
+    
+    // draw some locations
+    var hotelLocation = [40.705137, -74.007624];
+    var restaurantLocations = [
+        [40.705137, -74.013940],
+        [40.708475, -74.010846]
+    ];
+    var thingToDoLocations = [
+        [40.716291, -73.995315],
+        [40.707119, -74.003602]
+    ];
 
-function drawLocation (location, opts) {
-    if (typeof opts !== 'object') {
-        opts = {}
+    function drawLocation (location, opts) {
+        if (typeof opts !== 'object') {
+            opts = {}
+        }
+        opts.position = new google.maps.LatLng(location[0], location[1]);
+        opts.map = map;
+        var marker = new google.maps.Marker(opts);
     }
-    opts.position = new google.maps.LatLng(location[0], location[1]);
-    opts.map = map;
-    var marker = new google.maps.Marker(opts);
+    drawLocation(hotelLocation, {
+        icon: '/images/lodging_0star.png'
+    });
+    restaurantLocations.forEach(function (loc) {
+        drawLocation(loc, {
+            icon: '/images/restaurant.png'
+        });
+    });
+    thingToDoLocations.forEach(function (loc) {
+        drawLocation(loc, {
+            icon: '/images/star-3.png'
+        });
+    });
 }
 
-var styleArr = 
-[
+$(document).ready(function() {
+    initialize_gmaps();
+});
+
+var styleArr = [
     {
         "featureType": "landscape",
         "stylers": [
@@ -124,40 +150,4 @@ var styleArr =
         ]
     },
     {}
-]
-
-$(document).ready(function() {
-    initialize_gmaps();
-
-    $('#hotels_button').on('click', function(){
-        var hotelSelection = ($("#hotels_selector option:selected").text());
-        var span = $('<span class="title">'+ hotelSelection +'</span><button class="btn btn-xs btn-danger remove btn-circle">x</button>');
-        $("#itinerary-hotel").append(span)
-        $('.remove').on('click', function(){
-	    	$(this).prev().remove();
-	    	$(this).remove();
-	    })
-    });
-    $('#restaurants_button').on('click', function(){
-        var restaurantSelection = ($("#restaurants_selector option:selected").text());
-        var span = $('<span class="title">'+ restaurantSelection +'</span><button class="btn btn-xs btn-danger remove btn-circle">x</button>');
-        $("#itinerary-restaurant").append(span);
-        $('.remove').on('click', function(){
-	    	$(this).prev().remove();
-	    	$(this).remove();
-	    })
-    });
-
-    $('#things_to_do_button').on('click', function(){
-    	var thingsToDoSelection = ($("#things_to_do_selector option:selected").text());
-        var span = $('<span class="title">'+ thingsToDoSelection +'</span><button class="btn btn-xs btn-danger remove btn-circle">x</button>');
-        $("#itinerary-things").append(span);
-        $('.remove').on('click', function(){
-	    	$(this).prev().remove();
-	    	$(this).remove();
-	    })
-    });
-
-    
-
-})
+    ]
